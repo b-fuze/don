@@ -52,6 +52,49 @@ all:
 `)
 ```
 
+## Example output
+```json
+{
+    "assets": [
+        {
+            "type": "command",
+            "command": "rollup"
+        },
+        {
+            "type": "command",
+            "command": "node-sass -r src/css  --output assets/css"
+        }
+    ],
+    "lint": [
+        {
+            "type": "command",
+            "command": "eslint"
+        }
+    ],
+    "done": [
+        {
+            "type": "command",
+            "command": "echo \"Finished\""
+        }
+    ],
+    "all": [
+        {
+            "type": "dependency",
+            "dependencies": [
+                "lint"
+            ]
+        },
+        {
+            "type": "dependency",
+            "dependencies": [
+                "assets",
+                "done"
+            ]
+        }
+    ]
+}
+```
+
 ## Development
 Download dependencies to develop Don
 ```
