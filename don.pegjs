@@ -1,5 +1,5 @@
 start
- = ws targets_arr:target_list {
+ = ws * targets_arr:target_list {
      const targets = {}
      
      for (const target of targets_arr) {

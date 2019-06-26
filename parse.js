@@ -342,7 +342,12 @@ function peg$parse(input, options) {
     var s0, s1, s2;
 
     s0 = peg$currPos;
-    s1 = peg$parsews();
+    s1 = [];
+    s2 = peg$parsews();
+    while (s2 !== peg$FAILED) {
+      s1.push(s2);
+      s2 = peg$parsews();
+    }
     if (s1 !== peg$FAILED) {
       s2 = peg$parsetarget_list();
       if (s2 !== peg$FAILED) {
