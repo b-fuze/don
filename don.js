@@ -32,6 +32,7 @@ function checkDependencyReferences(donTree) {
 
 function checkCircular(donTree, target, commands, stack = new Set()) {
   let commandNum = 0
+  let foundCircular = null
 
   for (const command of commands) {
     commandNum++
@@ -45,7 +46,7 @@ function checkCircular(donTree, target, commands, stack = new Set()) {
 
         if (dependencyStack.size === depDepth + 1) {
           // No circular reference for this dep, check further dependencies
-          return checkCircular(donTree, target, donTree[depName], dependencyStack)
+          foundCircular = checkCircular(donTree, target, donTree[depName], dependencyStack)
         } else {
           // Found circular reference
           return {
@@ -55,6 +56,10 @@ function checkCircular(donTree, target, commands, stack = new Set()) {
             commandNumber: commandNum,
           }
         }
+      }
+
+      if (foundCircular) {
+        return foundCircular
       }
     }
   }
