@@ -175,7 +175,7 @@ function peg$parse(input, options) {
       peg$c11 = function(main_ci, cs, multil_str) {
            return {
              type: "command",
-             command: text_val(cs) + text_val(multil_str),
+             command: cs + multil_str,
            }
          },
       peg$c12 = function(main_ci, cs) {
@@ -191,12 +191,12 @@ function peg$parse(input, options) {
       peg$c17 = function() { return text() },
       peg$c18 = /^[a-z0-9_\-]/i,
       peg$c19 = peg$classExpectation([["a", "z"], ["0", "9"], "_", "-"], false, true),
-      peg$c20 = /^[^\n]/,
-      peg$c21 = peg$classExpectation(["\n"], true, false),
+      peg$c20 = /^[^\r\n]/,
+      peg$c21 = peg$classExpectation(["\r", "\n"], true, false),
       peg$c22 = function(name, right) { return [name].concat(right) },
       peg$c23 = function(name) { return [name] },
-      peg$c24 = /^[ \n]/,
-      peg$c25 = peg$classExpectation([" ", "\n"], false, false),
+      peg$c24 = /^[ \r\n]/,
+      peg$c25 = peg$classExpectation([" ", "\r", "\n"], false, false),
       peg$c26 = "\n",
       peg$c27 = peg$literalExpectation("\n", false),
       peg$c28 = "\r\n",
@@ -967,12 +967,6 @@ function peg$parse(input, options) {
 
     return s0;
   }
-
-
-    function text_val(array) {
-      return typeof array === "string" ? array : array.flat().join("")
-    }
-
 
   peg$result = peg$startRuleFunction();
 

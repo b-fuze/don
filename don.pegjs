@@ -1,9 +1,3 @@
-{
-  function text_val(array) {
-    return typeof array === "string" ? array : array.flat().join("")
-  }
-}
-
 start
  = ws targets_arr:target_list {
      const targets = {}
@@ -42,7 +36,7 @@ command
    ) * {
      return {
        type: "command",
-       command: text_val(cs) + text_val(multil_str),
+       command: cs + multil_str,
      }
    }
 
@@ -61,7 +55,7 @@ target_name
  = [a-z0-9_-]i + { return text() }
 
 command_string
- = [^\n] + { return text() }
+ = [^\r\n] + { return text() }
 
 dependency_string
  = "$" name:target_name is right:dependency_string { return [name].concat(right) }
@@ -73,7 +67,7 @@ is
 
 // White space
 ws
- = [ \n] + { return text() }
+ = [ \r\n] + { return text() }
 
 // Newline
 nl
