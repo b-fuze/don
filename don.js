@@ -4,9 +4,6 @@ const { parse } = require("./parse.js")
 const { readFileSync } = require("fs")
 const path = require("path")
 
-const file = process.argv[2]
-const src = readFileSync(file, "utf8")
-
 function checkDependencyReferences(donTree) {
   const undefinedDependencies = [
     // {
@@ -65,47 +62,78 @@ function checkCircular(donTree, target, commands, stack = new Set()) {
   return null
 }
 
-const absFile = path.resolve(__dirname, file)
+function donParse(source, absFile, error, exit = () => {}) {
+  try {
+    const parsed = parse(source)
 
-try {
-  const parsed = parse(src)
+    // Check for undefined dependencies
+    let undefinedDependencies = checkDependencyReferences(parsed)
 
-  // Check for undefined dependencies
-  let undefinedDependencies = checkDependencyReferences(parsed)
+    if (undefinedDependencies.length) {
+      error(absFile + "\nError:\n")
 
-  if (undefinedDependencies.length) {
-    console.error(absFile + "\nError:\n")
+      for (const undep of undefinedDependencies) {
+        error(`  Target "${ undep.target }" references undefined dependency "${ undep.dependency }"`)
+      }
 
-    for (const undep of undefinedDependencies) {
-      console.error(`  Target "${ undep.target }" references undefined dependency "${ undep.dependency }"`)
+      exit(1)
     }
 
+    let circularDeps = []
+
+    for (const [target, commands] of Object.entries(parsed)) {
+      const targetCircularDeps = checkCircular(parsed, target, commands, new Set([target]))
+
+      if (targetCircularDeps) {
+        circularDeps.push(targetCircularDeps)
+      }
+    }
+
+    if (circularDeps.length) {
+      error(absFile + "\nError:")
+
+      for (const cirdep of circularDeps) {
+        error(`  Target "${ cirdep.target }" has circular dependency "${ cirdep.dependency }" via its dependency "${ cirdep.via }" on command ${ cirdep.commandNumber }`)
+      }
+
+      exit()
+    }
+
+    return parsed
+  } catch(e) {
+    const loc = e.location.start
+    error(`${ absFile }:${ loc.line }:${ loc.column }\n${ e.name }: ${ e.message }`)
+  }
+}
+
+module.exports = {
+  parse(source, filePath = "internal") {
+    let error = ""
+    const result = donParse(source, filePath, err => {
+      error += err
+    })
+
+    if (error) {
+      throw new Error(error)
+    }
+
+    return result
+  }
+}
+
+if (require.main === module) {
+  const file = process.argv[2]
+  const absFile = path.resolve(__dirname, file)
+  const source = readFileSync(file, "utf8")
+
+  let error = ""
+  const result = donParse(source, absFile, err => {
+    error += err + "\n"
+  }, () => {
+    process.stderr.write(error)
     process.exit(1)
-  }
+  })
 
-  let circularDeps = []
-
-  for (const [target, commands] of Object.entries(parsed)) {
-    const targetCircularDeps = checkCircular(parsed, target, commands, new Set([target]))
-
-    if (targetCircularDeps) {
-      circularDeps.push(targetCircularDeps)
-    }
-  }
-
-  if (circularDeps.length) {
-    console.error(absFile + "\nError:")
-
-    for (const cirdep of circularDeps) {
-      console.error(`  Target "${ cirdep.target }" has circular dependency "${ cirdep.dependency }" via its dependency "${ cirdep.via }" on command ${ cirdep.commandNumber }`)
-    }
-
-    process.exit(1)
-  }
-
-  console.log(JSON.stringify(parsed, null, 4))
-} catch(e) {
-  const loc = e.location.start
-  console.error(`${ absFile }:${ loc.line }:${ loc.column }\n${ e.name }: ${ e.message }`)
+  console.log(JSON.stringify(result, null, 4))
 }
 

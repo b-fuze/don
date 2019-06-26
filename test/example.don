@@ -1,0 +1,16 @@
+assets:
+  - rollup
+  - node-sass -r
+    src/css 
+    --output assets/css
+
+lint:
+  - eslint
+
+done:
+  - echo "Finished"
+
+all:
+  - $lint
+  - $assets $done
+

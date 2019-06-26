@@ -1,6 +1,6 @@
 {
-  "name": "don",
-  "version": "1.0.0",
+  "name": "@b-fuze/don",
+  "version": "1.0.3",
   "description": "Make and YAML inspired build tool",
   "main": "don.js",
   "scripts": {
@@ -16,5 +16,17 @@
   "license": "MIT",
   "devDependencies": {
     "pegjs": "^0.10.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/b-fuze/don.git"
+  },
+  "bugs": {
+    "url": "https://github.com/b-fuze/don/issues"
+  },
+  "homepage": "https://github.com/b-fuze/don#readme"
 }

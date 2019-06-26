@@ -5,7 +5,7 @@
 }
 
 start
- = targets_arr:( tgt:target nl { return tgt } ) + {
+ = ws * targets_arr:( tgt:target nl { return tgt } ) + {
      const targets = {}
      
      for (const target of targets_arr) {
