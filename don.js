@@ -101,8 +101,14 @@ function donParse(source, absFile, error, exit = () => {}) {
 
     return parsed
   } catch(e) {
+    if (!e.location) {
+      error(e.toString())
+      return exit()
+    }
+
     const loc = e.location.start
     error(`${ absFile }:${ loc.line }:${ loc.column }\n${ e.name }: ${ e.message }`)
+    exit()
   }
 }
 

@@ -5,7 +5,7 @@
 }
 
 start
- = ws * targets_arr:( tgt:target nl { return tgt } ) + {
+ = ws targets_arr:target_list {
      const targets = {}
      
      for (const target of targets_arr) {
@@ -14,6 +14,11 @@ start
 
      return targets
    }
+
+
+target_list
+ = tgt:target ws * rec_tgts:target_list { return [tgt].concat(rec_tgts) }
+ / tgt:target ws * { return [tgt] }
 
 target
  = tn:target_name ":" is nl
