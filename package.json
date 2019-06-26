@@ -1,0 +1,20 @@
+{
+  "name": "don",
+  "version": "1.0.0",
+  "description": "Make and YAML inspired build tool",
+  "main": "don.js",
+  "scripts": {
+    "test": "node ./don.js test.don",
+    "build": "pegjs -o parse.js don.pegjs"
+  },
+  "keywords": [
+    "build",
+    "tool",
+    "javascript"
+  ],
+  "author": "b-fuze",
+  "license": "MIT",
+  "devDependencies": {
+    "pegjs": "^0.10.0"
+  }
+}

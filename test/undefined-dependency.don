@@ -1,0 +1,32 @@
+node:
+  - node -e "console.log('NODEJS')"
+
+hi_date:
+  - echo "Hi"
+  - date
+  - $target $this-echo
+  - df
+    h --pointless --arg
+    --more pointless args
+    --nothing
+
+this-echo:
+  - echo "Hello world"
+  - $none-existent-dep
+
+target:
+  - some-command "\$backslashes"
+
+all:
+  - $hi_date
+  - $node $this-echo 
+
+hi_date:
+  - echo "Hi"
+  - date
+  - $target $this-echo
+  - df
+    h --pointless --arg
+    --more pointless args
+    --nothing
+
