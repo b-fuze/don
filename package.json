@@ -1,6 +1,6 @@
 {
   "name": "@b-fuze/don",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Make and YAML inspired build tool",
   "main": "don.js",
   "scripts": {
