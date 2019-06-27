@@ -8,6 +8,7 @@ assets:
     src/css 
     --output assets/css
 
+# This comment about lint
 lint:
   - eslint
 
@@ -43,12 +44,16 @@ assets:
     src/css 
     --output assets/css
 
+# This comment about lint
 lint:
   - eslint
 
+done:
+  - echo "Finished"
+
 all:
   - $lint
-  - $assets
+  - $assets $done
 `)
 ```
 
