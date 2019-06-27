@@ -1,12 +1,14 @@
 start
  = ( comments_whitespace ws + ) ? targets_arr:target_list {
      const targets = {}
+     const targetNames = []
      
      for (const target of targets_arr) {
+       targetNames.push(target.name)
        targets[target.name] = target.commands
      }
 
-     return targets
+     return { targetNames, targets }
    }
 
 

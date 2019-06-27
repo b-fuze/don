@@ -69,7 +69,7 @@ function checkCircular(donTree, target, commands, stack = new Set()) {
 
 function donParse(source, absFile, error, exit = () => {}) {
   try {
-    const parsed = parse(source)
+    const { targets: parsed } = parse(source)
 
     // Check for undefined dependencies
     let undefinedDependencies = checkDependencyReferences(parsed)

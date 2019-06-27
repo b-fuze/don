@@ -143,12 +143,14 @@ function peg$parse(input, options) {
 
       peg$c0 = function(targets_arr) {
            const targets = {}
+           const targetNames = []
            
            for (const target of targets_arr) {
+             targetNames.push(target.name)
              targets[target.name] = target.commands
            }
 
-           return targets
+           return { targetNames, targets }
          },
       peg$c1 = function(tgt, rec_tgts) { return [tgt].concat(rec_tgts) },
       peg$c2 = function(tgt) { return [tgt] },
