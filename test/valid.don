@@ -18,6 +18,7 @@ hi_date:
 # Really close comment
 echo:
   - echo "Hello world"
+  - $target
 
 target:
   - some-command "\$backslashes"
@@ -27,9 +28,10 @@ target:
     --other-arg stuff
   - extra_command
     with args lol
+    # Circular
+  - &all
 
 all:
-  - $hi_date
   - $node $echo 
 
 # Lastly, a comment

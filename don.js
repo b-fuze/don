@@ -15,7 +15,7 @@ function checkDependencyReferences(donTree) {
   for (const [target, commands] of Object.entries(donTree)) {
     for (const command of commands) {
       if (command.type === "dependency") {
-        for (const dep of command.dependencies) {
+        for (const { name: dep } of command.dependencies) {
           if (!donTree.hasOwnProperty(dep)) {
             undefinedDependencies.push({
               target, 
@@ -30,7 +30,7 @@ function checkDependencyReferences(donTree) {
   return undefinedDependencies
 }
 
-function checkCircular(donTree, target, commands, stack = new Set()) {
+function checkCircular(donTree, target, commands, stack = new Set(), circularDeps = {}) {
   let commandNum = 0
   let foundCircular = null
 
@@ -38,22 +38,38 @@ function checkCircular(donTree, target, commands, stack = new Set()) {
     commandNum++
 
     if (command.type === "dependency") {
-      for (const depName of command.dependencies) {
+      for (const { name: depName, type } of command.dependencies) {
         let depDepth = stack.size
-        const dependencyStack = new Set(stack)
+        let dependencyStack = new Set(stack)
 
         dependencyStack.add(depName)
 
+        // Treat circular dependency special
+        if (type === "circular") {
+          // We've already been down this rabbit hole, skip
+          if (circularDeps[depName]) {
+            continue
+          }
+
+          circularDeps[depName] = true
+          dependencyStack = new Set([depName])
+        }
+
         if (dependencyStack.size === depDepth + 1) {
           // No circular reference for this dep, check further dependencies
-          foundCircular = checkCircular(donTree, target, donTree[depName], dependencyStack)
+          foundCircular = checkCircular(donTree, target, donTree[depName], dependencyStack, circularDeps)
         } else {
-          // Found circular reference
-          return {
-            target,
-            via: Array.from(dependencyStack).slice(-1)[0],
-            dependency: depName,
-            commandNumber: commandNum,
+          // This dep is circular
+          if (circularDeps.hasOwnProperty(depName)) {
+            // This dep is marked circular
+          } else {
+            // It's not marked circular
+            return {
+              target,
+              via: Array.from(dependencyStack).slice(-1)[0],
+              dependency: depName,
+              commandNumber: commandNum,
+            }
           }
         }
       }

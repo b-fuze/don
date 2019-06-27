@@ -1,3 +1,12 @@
+{
+  function dep_type(dep_sym, dep_name) {
+    return {
+      name: dep_name,
+      type: dep_sym === "$" ? "normal" : "circular",
+    }
+  }
+}
+
 start
  = ( comments_whitespace ws + ) ? targets_arr:target_list {
      const targets = {}
@@ -28,7 +37,7 @@ target
    commands:( ( command / command_dependency ) + ) { return { name: tn, commands } }
 
 command
- = main_ci:command_indent "- " ! ( "$" target_name ) cs:command_string nl
+ = main_ci:command_indent "- " ! ( dependency_symbol target_name ) cs:command_string nl
    multil_str:(
      // Comments in multi-line
      multil_ci:command_indent "#" multil_cs:command_string nl {
@@ -79,8 +88,12 @@ command_string
  = [^\r\n] + { return text() }
 
 dependency_string
- = "$" name:target_name is right:dependency_string { return [name].concat(right) }
- / "$" name:target_name is { return [name] }
+ = sym:dependency_symbol name:target_name is right:dependency_string { return [dep_type(sym, name)].concat(right) }
+ / sym:dependency_symbol name:target_name is { return [dep_type(sym, name)] }
+
+dependency_symbol
+ = "$"
+ / "&"
 
 // Inline space
 is
