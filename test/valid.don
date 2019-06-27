@@ -1,6 +1,10 @@
+# Some more comments okay
+# Wow, vim auto comments with Don lol
 
 node:
   - node -e "console.log('NODEJS')"
+
+# Some comments
 
 hi_date:
   - echo "Hi"
@@ -11,13 +15,21 @@ hi_date:
     --more pointless args
     --nothing
 
+# Really close comment
 echo:
   - echo "Hello world"
 
 target:
   - some-command "\$backslashes"
+    # Comment some arg
+    --some-arg
+    # Comment other arg
+    --other-arg stuff
+  - extra_command
+    with args lol
 
 all:
   - $hi_date
   - $node $echo 
 
+# Lastly, a comment

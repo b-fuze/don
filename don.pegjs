@@ -1,5 +1,5 @@
 start
- = ws * targets_arr:target_list {
+ = ( comments_whitespace ws + ) ? targets_arr:target_list {
      const targets = {}
      
      for (const target of targets_arr) {
@@ -11,8 +11,15 @@ start
 
 
 target_list
- = tgt:target ws * rec_tgts:target_list { return [tgt].concat(rec_tgts) }
- / tgt:target ws * { return [tgt] }
+ = tgt:target ( comments_whitespace ) ? ws + rec_tgts:target_list { return [tgt].concat(rec_tgts) }
+ / tgt:target ( comments_whitespace ) ? ws * { return [tgt] }
+
+comments_whitespace
+ = ws * comment comments_whitespace
+ / ws * comment
+
+comment
+ = "#" [^\r\n] +
 
 target
  = tn:target_name ":" is nl
@@ -20,23 +27,35 @@ target
 
 command
  = main_ci:command_indent "- " ! ( "$" target_name ) cs:command_string nl
-   multil_str:( multil_ci:command_indent ! "- " multil_cs:command_string nl {
+   multil_str:(
+     // Comments in multi-line
+     multil_ci:command_indent "#" multil_cs:command_string nl {
        if (multil_ci === main_ci + "  ") {
          const multiline_begin = multil_cs.slice(0, 2)
 
-         if (multiline_begin !== "- " && multiline_begin !== "-") {
-           return " " + multil_cs
-         } else {
-           return expected("Multi line commands can't start with a single hyphen, consider quoting the single hyphen")
-         }
+         return "COMMENT"
        } else {
          return expected("multi-line indent matching first line of command")
        }
      }
+     // Normal commands in multi-line
+     / multil_ci:command_indent ! "- " multil_cs:command_string nl {
+         if (multil_ci === main_ci + "  ") {
+           const multiline_begin = multil_cs.slice(0, 2)
+
+           if (multiline_begin !== "- " && multiline_begin !== "-") {
+             return { command_line: " " + multil_cs }
+           } else {
+             return expected("Multi line commands can't start with a single hyphen, consider quoting the single hyphen")
+           }
+         } else {
+           return expected("multi-line indent matching first line of command")
+         }
+       } 
    ) * {
      return {
        type: "command",
-       command: cs + multil_str,
+       command: cs + multil_str.map(line => line === "COMMENT" ? "" : line.command_line).join(""),
      }
    }
 
